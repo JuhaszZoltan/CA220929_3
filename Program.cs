@@ -1,4 +1,8 @@
-﻿//Console.CursorVisible = false;
+﻿using System.Diagnostics;
+
+Stopwatch sw = new();
+
+Console.CursorVisible = false;
 
 char[,] palya = new char[24, 79];
 
@@ -49,35 +53,57 @@ for (int sor = 0; sor < palya.GetLength(0); sor++)
 int left = 0;
 int top = 0;
 Console.SetCursorPosition(left, top);
+Console.ForegroundColor = ConsoleColor.Red;
+Console.BackgroundColor = ConsoleColor.Black;
 
-while (palya[top, left] != 'O')
+while (palya[top, left] != '#' && palya[top, left] != 'O')
 {
     ConsoleKey ck = Console.ReadKey().Key;
-    if (ck == ConsoleKey.UpArrow)
+
+    if (!sw.IsRunning) sw.Start();
+
+    Console.SetCursorPosition(left, top);
+    Console.Write(' ');
+
+    if (ck == ConsoleKey.UpArrow && top != 0)
     {
         //fel
         top--;
     }
-    else if (ck == ConsoleKey.DownArrow)
+    else if (ck == ConsoleKey.DownArrow && top + 1 < palya.GetLength(0))
     {
         //le
         top++;
     }
-    else if (ck == ConsoleKey.LeftArrow)
+    else if (ck == ConsoleKey.LeftArrow && left != 0)
     {
         //balra
         left--;
     }
-    else if (ck == ConsoleKey.RightArrow)
+    else if (ck == ConsoleKey.RightArrow && left + 1 < palya.GetLength(1))
     {
         //robbra
         left++;
     }
+
     Console.SetCursorPosition(left, top);
+    Console.Write('@');
 }
+
+sw.Stop();
 
 Console.Clear();
 Console.ResetColor();
-Console.WriteLine("nyertél!");
 
-//Console.ReadKey(true);
+if (palya[top, left] == 'O')
+{
+    Console.WriteLine("nyertél!");
+    Console.WriteLine($"mért idő: {sw.Elapsed.TotalSeconds:0.000} sec.");
+}
+else
+{
+    Console.WriteLine("falnak mentél, vesztettél!");
+}
+
+Console.WriteLine("\n\nNyomj ESCAPEet a kilépéshez!");
+while (Console.ReadKey(true).Key != ConsoleKey.Escape) ;
